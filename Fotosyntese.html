@@ -2,7 +2,7 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<title>Fotosyntese Træner</title>
+<title>Fotosyntese Træner + Shop</title>
 <style>
     body {
         margin: 0;
@@ -23,7 +23,10 @@
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.15);
         position: relative;
+        overflow: hidden;
     }
+
+    .hidden { display: none; }
 
     /* GUI */
     #gui {
@@ -53,8 +56,6 @@
 
     /* Screens */
     .screen { animation: fadeIn .25s ease; }
-    .hidden { display: none; }
-
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to   { opacity: 1; transform: translateY(0); }
@@ -82,7 +83,7 @@
         box-shadow: none;
     }
 
-    /* PLANT (CSS-tegnet) */
+    /* PLANT (kun på startskærm) */
     #plantContainer {
         width: 320px;
         height: 360px;
@@ -156,11 +157,6 @@
         transform: translateX(-50%) rotate(25deg);
     }
 
-    .leaf.small {
-        width: 70px;
-        height: 35px;
-    }
-
     .leaf.hidden {
         opacity: 0;
     }
@@ -221,6 +217,137 @@
         background: #ff8a8a !important;
         border-color: #990000 !important;
     }
+
+    /* SHOP BUTTON */
+    #shopButton {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+        background: #fff;
+        border: 3px solid #000;
+        border-radius: 50%;
+        font-size: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: 0.2s;
+        z-index: 20;
+    }
+
+    #shopButton:hover {
+        transform: scale(1.1);
+        background: #f0f0f0;
+    }
+
+    /* SHOP OVERLAY */
+    #shopOverlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        z-index: 30;
+    }
+
+    #shopPanel {
+        width: 350px;
+        height: 90%;
+        background: #fff;
+        border-left: 3px solid #000;
+        padding: 20px;
+        overflow-y: auto;
+        box-shadow: -6px 0 20px rgba(0,0,0,0.3);
+    }
+
+    #shopPanel h2 {
+        margin-top: 0;
+    }
+
+    .shopItem {
+        border: 2px solid #000;
+        padding: 12px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .shopItem:hover {
+        background: #f0f0f0;
+        transform: translateX(-5px);
+    }
+
+    /* CHARACTER PREVIEW */
+    #characterPreview {
+        position: absolute;
+        left: 40px;
+        bottom: 40px;
+        width: 200px;
+        height: 300px;
+        pointer-events: none;
+    }
+
+    #charBase {
+        width: 120px;
+        height: 180px;
+        background: #ffe0b3;
+        border: 3px solid #000;
+        border-radius: 20px;
+        position: absolute;
+        bottom: 0;
+        left: 40px;
+    }
+
+    .charItem {
+        position: absolute;
+        left: 40px;
+        bottom: 0;
+        width: 120px;
+        height: 180px;
+        pointer-events: none;
+    }
+
+    #charHat {
+        background: url('data:image/svg+xml;utf8,<svg width="120" height="60" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="60" fill="red" stroke="black" stroke-width="4"/></svg>') no-repeat center/contain;
+        bottom: 140px;
+        height: 60px;
+    }
+
+    #charShirt {
+        background: url('data:image/svg+xml;utf8,<svg width="120" height="100" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="100" fill="blue" stroke="black" stroke-width="4"/></svg>') no-repeat center/contain;
+        bottom: 80px;
+        height: 100px;
+    }
+
+    #charPants {
+        background: url('data:image/svg+xml;utf8,<svg width="120" height="80" xmlns="http://www.w3.org/2000/svg"><rect width="120" height="80" fill="green" stroke="black" stroke-width="4"/></svg>') no-repeat center/contain;
+        bottom: 0;
+        height: 80px;
+    }
+
+    /* POPUP */
+    #popup {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 40;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #popupBox {
+        background: #fff;
+        padding: 30px;
+        border: 3px solid #000;
+        border-radius: 12px;
+        text-align: center;
+        max-width: 300px;
+    }
 </style>
 </head>
 <body>
@@ -242,6 +369,9 @@
             <div class="guiValue" id="timeLeft">0</div>
         </div>
     </div>
+
+    <!-- SHOP BUTTON -->
+    <div id="shopButton">🧍</div>
 
     <!-- START SCREEN -->
     <div id="startScreen" class="screen">
@@ -293,6 +423,31 @@
         <button onclick="stopTraining()">Stop træning</button>
     </div>
 
+    <!-- SHOP OVERLAY -->
+    <div id="shopOverlay" class="hidden">
+        <div id="shopPanel">
+            <h2>Karakter Shop</h2>
+            <p>Hold musen over for at prøve. Klik for at købe.</p>
+            <div id="shopList"></div>
+            <button onclick="closeShop()">Luk shop</button>
+        </div>
+
+        <div id="characterPreview">
+            <div id="charBase"></div>
+            <div id="charHat" class="charItem hidden"></div>
+            <div id="charShirt" class="charItem hidden"></div>
+            <div id="charPants" class="charItem hidden"></div>
+        </div>
+    </div>
+
+    <!-- POPUP -->
+    <div id="popup" class="hidden">
+        <div id="popupBox">
+            <p id="popupText"></p>
+            <button onclick="closePopup()">OK</button>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -314,6 +469,10 @@ const leaves = [
     document.getElementById("leaf8")
 ];
 const flower = document.getElementById("flower");
+
+const charHat = document.getElementById("charHat");
+const charShirt = document.getElementById("charShirt");
+const charPants = document.getElementById("charPants");
 
 const questions = [
     { q: "Hvad bruger planten som energi i fotosyntese?", options: ["CO₂", "Sollys", "Vand", "Ilt"], correct: 1 },
@@ -341,7 +500,7 @@ const questions = [
     { q: "Hvilken del af planten er ofte grøn?", options: ["Bladene", "Rødderne", "Frugten", "Frøene"], correct: 0 },
     { q: "Hvad sker der med glukose i planten?", options: ["Den bruges til energi og vækst", "Den bliver til sten", "Den forsvinder", "Den bliver til luft"], correct: 0 },
     { q: "Hvad kaldes processen hvor planter bruger O₂ og glukose til energi?", options: ["Fotosyntese", "Respiration", "Fordampning", "Filtrering"], correct: 1 },
-    { q: "Hvilken type organisme kan lave fotosyntese?", options: ["Planter og alger", "Dyr", "Svampe", "Bakterier kun"], correct: 0 },
+    { q: "Hvilken type organisme kan lave fotosyntese?", options: ["Planter og alger", "Dyr", "Svampe", "Kun bakterier"], correct: 0 },
     { q: "Hvad sker der med bladene om efteråret hos mange træer?", options: ["De bliver blå", "De falder af", "De bliver gennemsigtige", "De bliver metal"], correct: 1 },
     { q: "Hvad er en stomata?", options: ["En lille åbning i bladet", "En rod", "En blomst", "En frugt"], correct: 0 },
     { q: "Hvad passerer gennem stomata?", options: ["CO₂ og O₂", "Jern", "Salt", "Sand"], correct: 0 },
@@ -442,7 +601,6 @@ function feedPlant() {
     plantLevel++;
     plant.style.transform = `scale(${1 + plantLevel * 0.08})`;
 
-    // Vis flere blade og til sidst blomst
     if (plantLevel >= 2) leaves[2].classList.remove("hidden");
     if (plantLevel >= 3) leaves[3].classList.remove("hidden");
     if (plantLevel >= 4) leaves[4].classList.remove("hidden");
@@ -452,7 +610,6 @@ function feedPlant() {
     if (plantLevel >= 8) flower.style.opacity = 1;
 
     if (plantLevel >= 10) {
-        // Planten “spytter” CO₂ til spilleren
         oxygen += 5;
         document.getElementById("oxygen").textContent = oxygen;
 
@@ -462,35 +619,88 @@ function feedPlant() {
         flower.style.opacity = 0;
     }
 }
-<!-- SHOP BUTTON -->
-<div id="shopButton">🧍</div>
 
-<!-- SHOP OVERLAY -->
-<div id="shopOverlay" class="hidden">
-    <div id="shopPanel">
-        <h2>Karakter Shop</h2>
+/* SHOP LOGIK */
+const shopItems = [
+    { name: "Rød Hat", type: "hat", price: 5 },
+    { name: "Blå Hat", type: "hat", price: 10 },
+    { name: "Guld Hat", type: "hat", price: 25 },
 
-        <div id="shopList"></div>
-    </div>
+    { name: "Blå Trøje", type: "shirt", price: 8 },
+    { name: "Sort Hoodie", type: "shirt", price: 15 },
+    { name: "Guld Rustning", type: "shirt", price: 40 },
 
-    <div id="characterPreview">
-        <div id="charBase"></div>
-        <div id="charHat" class="charItem hidden"></div>
-        <div id="charShirt" class="charItem hidden"></div>
-        <div id="charPants" class="charItem hidden"></div>
-    </div>
-</div>
+    { name: "Grøn Bukser", type: "pants", price: 6 },
+    { name: "Sorte Bukser", type: "pants", price: 12 },
+    { name: "Guld Bukser", type: "pants", price: 30 }
+];
 
-<!-- POPUP -->
-<div id="popup" class="hidden">
-    <div id="popupBox">
-        <p id="popupText"></p>
-        <button onclick="closePopup()">OK</button>
-    </div>
-</div>
+let owned = { hat: false, shirt: false, pants: false };
 
+document.getElementById("shopButton").onclick = () => {
+    document.getElementById("shopOverlay").classList.remove("hidden");
+    loadShop();
+};
+
+function closeShop() {
+    document.getElementById("shopOverlay").classList.add("hidden");
+}
+
+function loadShop() {
+    const list = document.getElementById("shopList");
+    list.innerHTML = "";
+
+    // sørg for at de dyreste ender nederst (array er allerede sorteret stigende)
+    shopItems.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "shopItem";
+        div.textContent = `${item.name} – ${item.price} O₂`;
+
+        div.onmouseenter = () => previewItem(item);
+        div.onmouseleave = () => clearPreview(item);
+        div.onclick = () => buyItem(item);
+
+        list.appendChild(div);
+    });
+}
+
+function previewItem(item) {
+    if (item.type === "hat") charHat.classList.remove("hidden");
+    if (item.type === "shirt") charShirt.classList.remove("hidden");
+    if (item.type === "pants") charPants.classList.remove("hidden");
+}
+
+function clearPreview(item) {
+    if (item.type === "hat" && !owned.hat) charHat.classList.add("hidden");
+    if (item.type === "shirt" && !owned.shirt) charShirt.classList.add("hidden");
+    if (item.type === "pants" && !owned.pants) charPants.classList.add("hidden");
+}
+
+function buyItem(item) {
+    if (oxygen < item.price) {
+        showPopup("Du har ikke nok O₂ til at købe " + item.name + "!");
+        return;
+    }
+
+    oxygen -= item.price;
+    document.getElementById("oxygen").textContent = oxygen;
+
+    owned[item.type] = true;
+    previewItem(item);
+
+    showPopup("Du købte: " + item.name);
+}
+
+/* POPUP */
+function showPopup(text) {
+    document.getElementById("popupText").textContent = text;
+    document.getElementById("popup").classList.remove("hidden");
+}
+
+function closePopup() {
+    document.getElementById("popup").classList.add("hidden");
+}
 </script>
 
 </body>
 </html>
-
