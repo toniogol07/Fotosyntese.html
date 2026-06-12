@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<title>Fotosyntese Spil</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(#a8e6ff, #d4ffd1);
+        margin: 0;
+        padding: 0;
+        text-align: center;
+    }
+
+    #gameContainer {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .hidden { display: none; }
+
+    #plant {
+        width: 150px;
+        transition: transform 0.5s ease;
+    }
+
+    #questionBox {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+        font-size: 20px;
+    }
+
+    button {
+        padding: 12px 20px;
+        margin: 10px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: none;
+        background: #4caf50;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #3e8e41;
+    }
+
+    #o2burst {
+        font-size: 40px;
+        opacity: 0;
+        transition: opacity 1s ease;
+    }
+</style>
+</head>
+<body>
+
+<div id="gameContainer">
+
+    <!-- START MENU -->
+    <div id="startMenu">
+        <h1>🌱 Fotosyntese Træner</h1>
+        <img id="plant" src="https://i.imgur.com/0ZP4p0B.png">
+        <p>Plante Level: <span id="plantLevel">1</span></p>
+        <p>Sollyskraft: <span id="sunPower">0</span></p>
+        <p>O₂: <span id="oxygen">0</span></p>
+
+        <button onclick="openTraining()">Træn</button>
+        <button onclick="feedPlant()">Giv Sollyskraft til Planten</button>
+
+        <div id="o2burst">🫧 O₂ +5</div>
+    </div>
+
+    <!-- TRAINING MENU -->
+    <div id="trainingMenu" class="hidden">
+        <h2>Vælg træningstid</h2>
+        <button onclick="startTraining(30)">30 sek</button>
+        <button onclick="startTraining(60)">60 sek</button>
+        <button onclick="startTraining(120)">120 sek</button>
+        <button onclick="backToMenu()">Tilbage</button>
+    </div>
+
+    <!-- QUESTION AREA -->
+    <div id="questionArea" class="hidden">
+        <h2>Træning i gang</h2>
+        <p>⏳ Tid tilbage: <span id="timeLeft"></span></p>
+        <p>☀️ Sollyskraft: <span id="trainingPower">0</span></p>
+
+        <div id="questionBox"></div>
+    </div>
+
+</div>
+
+<script>
+// -----------------------------
+// GAME STATE
+// -----------------------------
+let sunPower = 0;
+let oxygen = 0;
+let plantLevel = 1;
+let trainingPower = 0;
+let timer;
+
+// -----------------------------
+// QUESTIONS
+// -----------------------------
+const questions = [
+    { q: "Hvad bruger planten til fotosyntese?", a: "Sollys" },
+    { q: "Hvilket stof udånder planten?", a: "O2" },
+    { q: "Hvad optager planten fra jorden?", a: "Vand" },
+    { q: "Hvad optager planten fra luften?", a: "CO2" },
+    { q: "Hvad producerer planten i fotosyntese?", a: "Glukose" }
+];
+
+// -----------------------------
+// MENU HANDLING
+// -----------------------------
+function openTraining() {
+    document.getElementById("startMenu").classList.add("hidden");
+    document.getElementById("trainingMenu").classList.remove("hidden");
+}
+
+function backToMenu() {
+    document.getElementById("trainingMenu").classList.add("hidden");
+    document.getElementById("startMenu").classList.remove("hidden");
+}
+
+// -----------------------------
+// TRAINING SYSTEM
+// -----------------------------
+function startTraining(seconds) {
+    trainingPower = 0;
+
+    document.getElementById("trainingMenu").classList.add("hidden");
+    document.getElementById("questionArea").classList.remove("hidden");
+
+    document.getElementById("timeLeft").textContent = seconds;
+
+    timer = setInterval(() => {
+        seconds--;
+        document.getElementById("timeLeft").textContent = seconds;
+
+        if (seconds <= 0) {
+            endTraining();
+        }
+    }, 1000);
+
+    newQuestion();
+}
+
+function newQuestion() {
+    const q = questions[Math.floor(Math.random() * questions.length)];
+
+    document.getElementById("questionBox").innerHTML = `
+        <p>${q.q}</p>
+        <input id="answerInput" placeholder="Svar...">
+        <button onclick="checkAnswer('${q.a}')">Svar</button>
+    `;
+}
+
+function checkAnswer(correct) {
+    const input = document.getElementById("answerInput").value.trim();
+
+    if (input.toLowerCase() === correct.toLowerCase()) {
+        trainingPower++;
+        document.getElementById("trainingPower").textContent = trainingPower;
+    }
+
+    newQuestion();
+}
+
+function endTraining() {
+    clearInterval(timer);
+
+    sunPower += trainingPower;
+    document.getElementById("sunPower").textContent = sunPower;
+
+    document.getElementById("questionArea").classList.add("hidden");
+    document.getElementById("startMenu").classList.remove("hidden");
+}
+
+// -----------------------------
+// PLANT GROWTH
+// -----------------------------
+function feedPlant() {
+    if (sunPower <= 0) return;
+
+    sunPower--;
+    plantLevel++;
+
+    document.getElementById("sunPower").textContent = sunPower;
+    document.getElementById("plantLevel").textContent = plantLevel;
+
+    const plant = document.getElementById("plant");
+    plant.style.transform = `scale(${1 + plantLevel * 0.1})`;
+
+    if (plantLevel >= 10) {
+        plantBurst();
+    }
+}
+
+// -----------------------------
+// OXYGEN BURST ANIMATION
+// -----------------------------
+function plantBurst() {
+    plantLevel = 1;
+    document.getElementById("plantLevel").textContent = plantLevel;
+
+    const plant = document.getElementById("plant");
+    plant.style.transform = "scale(0.5)";
+
+    oxygen += 5;
+    document.getElementById("oxygen").textContent = oxygen;
+
+    const burst = document.getElementById("o2burst");
+    burst.style.opacity = 1;
+
+    setTimeout(() => {
+        burst.style.opacity = 0;
+        plant.style.transform = "scale(1)";
+    }, 1500);
+}
+</script>
+
+</body>
+</html>
