@@ -650,7 +650,6 @@ function loadShop() {
     const list = document.getElementById("shopList");
     list.innerHTML = "";
 
-    // sørg for at de dyreste ender nederst (array er allerede sorteret stigende)
     shopItems.forEach(item => {
         const div = document.createElement("div");
         div.className = "shopItem";
