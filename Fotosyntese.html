@@ -462,7 +462,35 @@ function feedPlant() {
         flower.style.opacity = 0;
     }
 }
+<!-- SHOP BUTTON -->
+<div id="shopButton">🧍</div>
+
+<!-- SHOP OVERLAY -->
+<div id="shopOverlay" class="hidden">
+    <div id="shopPanel">
+        <h2>Karakter Shop</h2>
+
+        <div id="shopList"></div>
+    </div>
+
+    <div id="characterPreview">
+        <div id="charBase"></div>
+        <div id="charHat" class="charItem hidden"></div>
+        <div id="charShirt" class="charItem hidden"></div>
+        <div id="charPants" class="charItem hidden"></div>
+    </div>
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="hidden">
+    <div id="popupBox">
+        <p id="popupText"></p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+</div>
+
 </script>
 
 </body>
 </html>
+
