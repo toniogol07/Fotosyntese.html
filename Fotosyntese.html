@@ -82,20 +82,107 @@
         box-shadow: none;
     }
 
-    /* PLANT */
+    /* PLANT (CSS-tegnet) */
     #plantContainer {
-        width: 300px;
-        height: 350px;
+        width: 320px;
+        height: 360px;
         margin: 20px auto;
         position: relative;
     }
 
-    #plantImg {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        filter: drop-shadow(0 0 10px rgba(0,0,0,0.2));
+    #plant {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 220px;
+        height: 320px;
+        transform-origin: bottom center;
         transition: transform 0.4s ease;
+    }
+
+    .pot {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 60px;
+        background: #c47a3a;
+        border-radius: 12px 12px 4px 4px;
+        border: 2px solid #000;
+    }
+
+    .pot::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: -10px;
+        right: -10px;
+        height: 18px;
+        background: #d8904a;
+        border-radius: 14px;
+        border: 2px solid #000;
+    }
+
+    .stem {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 18px;
+        height: 170px;
+        background: #0c7a2b;
+        border-radius: 999px;
+        border: 2px solid #000;
+    }
+
+    .leaf {
+        position: absolute;
+        width: 90px;
+        height: 45px;
+        background: #1ea93a;
+        border-radius: 999px;
+        border: 2px solid #000;
+        transform-origin: left center;
+    }
+
+    .leaf.left {
+        left: 50%;
+        transform: translateX(-50%) rotate(-25deg);
+    }
+
+    .leaf.right {
+        left: 50%;
+        transform: translateX(-50%) rotate(25deg);
+    }
+
+    .leaf.small {
+        width: 70px;
+        height: 35px;
+    }
+
+    .leaf.hidden {
+        opacity: 0;
+    }
+
+    .leaf1 { bottom: 120px; }
+    .leaf2 { bottom: 150px; }
+    .leaf3 { bottom: 180px; }
+    .leaf4 { bottom: 210px; }
+
+    .flower {
+        position: absolute;
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: radial-gradient(circle, #ffe066 0, #ffcc00 40%, #ff9900 70%);
+        border: 2px solid #000;
+        box-shadow: 0 0 15px rgba(255,200,0,0.7);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
     /* QUESTIONS */
@@ -134,7 +221,6 @@
         background: #ff8a8a !important;
         border-color: #990000 !important;
     }
-
 </style>
 </head>
 <body>
@@ -163,7 +249,19 @@
         <p>Træn din viden og få din plante til at vokse.</p>
 
         <div id="plantContainer">
-            <img id="plantImg" src="https://i.imgur.com/7yUQFQx.png">
+            <div id="plant">
+                <div class="pot"></div>
+                <div class="stem"></div>
+                <div class="leaf left leaf1" id="leaf1"></div>
+                <div class="leaf right leaf1" id="leaf2"></div>
+                <div class="leaf left leaf2 hidden" id="leaf3"></div>
+                <div class="leaf right leaf2 hidden" id="leaf4"></div>
+                <div class="leaf left leaf3 hidden" id="leaf5"></div>
+                <div class="leaf right leaf3 hidden" id="leaf6"></div>
+                <div class="leaf left leaf4 hidden" id="leaf7"></div>
+                <div class="leaf right leaf4 hidden" id="leaf8"></div>
+                <div class="flower" id="flower"></div>
+            </div>
         </div>
 
         <button onclick="openTraining()">Træn</button>
@@ -173,9 +271,13 @@
     <!-- TRAINING MENU -->
     <div id="trainingMenu" class="screen hidden">
         <h2>Vælg træningstid</h2>
-        <button onclick="startTraining(900)">15 Min.</button>
-        <button onclick="startTraining(1200)">20 Min.</button>
-        <button onclick="startTraining(1500)">25 Min.</button>
+        <p>Vælg hvor længe du vil træne.</p>
+        <button onclick="startTraining(5*60)">5 min</button>
+        <button onclick="startTraining(10*60)">10 min</button>
+        <button onclick="startTraining(15*60)">15 min</button>
+        <button onclick="startTraining(20*60)">20 min</button>
+        <button onclick="startTraining(25*60)">25 min</button>
+        <button onclick="startTraining(30*60)">30 min</button>
         <button onclick="backToStart()">Tilbage</button>
     </div>
 
@@ -200,14 +302,66 @@ let plantLevel = 1;
 let timer = null;
 let timeLeft = 0;
 
-const plantImg = document.getElementById("plantImg");
+const plant = document.getElementById("plant");
+const leaves = [
+    document.getElementById("leaf1"),
+    document.getElementById("leaf2"),
+    document.getElementById("leaf3"),
+    document.getElementById("leaf4"),
+    document.getElementById("leaf5"),
+    document.getElementById("leaf6"),
+    document.getElementById("leaf7"),
+    document.getElementById("leaf8")
+];
+const flower = document.getElementById("flower");
 
 const questions = [
-    { q: "Hvad bruger planten som energi?", options: ["CO₂", "Vand", "Sollys", "Ilt"], correct: 2 },
-    { q: "Hvad optager planten fra luften?", options: ["O₂", "CO₂", "Nitrogen", "Glukose"], correct: 1 },
-    { q: "Hvad udskiller planten?", options: ["CO₂", "Vand", "O₂", "Støv"], correct: 2 },
-    { q: "Hvad optager planten fra jorden?", options: ["Vand", "Ilt", "CO₂", "Sollys"], correct: 0 },
-    { q: "Hvad producerer planten?", options: ["Glukose", "Salt", "Protein", "Jern"], correct: 0 }
+    { q: "Hvad bruger planten som energi i fotosyntese?", options: ["CO₂", "Sollys", "Vand", "Ilt"], correct: 1 },
+    { q: "Hvilket gasstof optager planten fra luften?", options: ["O₂", "CO₂", "Nitrogen", "Ozon"], correct: 1 },
+    { q: "Hvilket gasstof udskiller planten til luften?", options: ["CO₂", "O₂", "Metan", "Nitrogen"], correct: 1 },
+    { q: "Hvad optager planten fra jorden gennem rødderne?", options: ["Vand", "Ilt", "CO₂", "Salt"], correct: 0 },
+    { q: "Hvad hedder det sukker, planten danner?", options: ["Glukose", "Protein", "Stivelse", "Fedt"], correct: 0 },
+    { q: "Hvor i planten foregår fotosyntese mest?", options: ["Rødderne", "Stammen", "Bladene", "Blomsten"], correct: 2 },
+    { q: "Hvilken farve har det vigtigste pigment i fotosyntese?", options: ["Rød", "Blå", "Grøn", "Gul"], correct: 2 },
+    { q: "Hvad hedder pigmentet i bladene?", options: ["Hemoglobin", "Chlorofyl", "Melanin", "Keratin"], correct: 1 },
+    { q: "Hvad er den kemiske formel for kuldioxid?", options: ["O₂", "CO₂", "H₂O", "C₆H₁₂O₆"], correct: 1 },
+    { q: "Hvad er den kemiske formel for vand?", options: ["H₂O", "CO₂", "O₂", "NaCl"], correct: 0 },
+    { q: "Hvad er den kemiske formel for glukose?", options: ["CO₂", "H₂O", "C₆H₁₂O₆", "O₃"], correct: 2 },
+    { q: "Hvilken del af planten optager vand?", options: ["Bladene", "Rødderne", "Blomsten", "Frugten"], correct: 1 },
+    { q: "Hvad er fotosyntesens vigtigste affaldsprodukt?", options: ["CO₂", "O₂", "Vand", "Glukose"], correct: 1 },
+    { q: "Hvornår kan fotosyntese foregå?", options: ["Kun om natten", "Kun om dagen", "Kun om vinteren", "Kun om sommeren"], correct: 1 },
+    { q: "Hvad bruger planten glukose til?", options: ["At lave energi og byggesten", "At lave lyd", "At lave varme", "At lave metal"], correct: 0 },
+    { q: "Hvad er fotosyntese?", options: ["Forbrænding af sukker", "Dannelsen af sukker ved hjælp af lys", "Smeltning af is", "Opløsning af salt"], correct: 1 },
+    { q: "Hvilken gas er vigtig for dyr at indånde?", options: ["CO₂", "O₂", "Helium", "Argon"], correct: 1 },
+    { q: "Hvilken gas hjælper med at holde varmen på Jorden?", options: ["CO₂", "O₂", "Neon", "Helium"], correct: 0 },
+    { q: "Hvad sker der med CO₂ i fotosyntese?", options: ["Den bliver til vand", "Den bliver til glukose og O₂", "Den forsvinder", "Den bliver til sten"], correct: 1 },
+    { q: "Hvad sker der med vand i fotosyntese?", options: ["Det bliver til glukose og O₂", "Det bliver til metal", "Det fordamper", "Det bliver til salt"], correct: 0 },
+    { q: "Hvad er nødvendigt for fotosyntese?", options: ["Lys, CO₂, vand", "Lys, jern, olie", "Mørke, CO₂, vand", "Lys, salt, sand"], correct: 0 },
+    { q: "Hvorfor er fotosyntese vigtig for dyr?", options: ["Den laver O₂ og mad", "Den laver sten", "Den laver metal", "Den laver lyd"], correct: 0 },
+    { q: "Hvilken del af planten er ofte grøn?", options: ["Bladene", "Rødderne", "Frugten", "Frøene"], correct: 0 },
+    { q: "Hvad sker der med glukose i planten?", options: ["Den bruges til energi og vækst", "Den bliver til sten", "Den forsvinder", "Den bliver til luft"], correct: 0 },
+    { q: "Hvad kaldes processen hvor planter bruger O₂ og glukose til energi?", options: ["Fotosyntese", "Respiration", "Fordampning", "Filtrering"], correct: 1 },
+    { q: "Hvilken type organisme kan lave fotosyntese?", options: ["Planter og alger", "Dyr", "Svampe", "Bakterier kun"], correct: 0 },
+    { q: "Hvad sker der med bladene om efteråret hos mange træer?", options: ["De bliver blå", "De falder af", "De bliver gennemsigtige", "De bliver metal"], correct: 1 },
+    { q: "Hvad er en stomata?", options: ["En lille åbning i bladet", "En rod", "En blomst", "En frugt"], correct: 0 },
+    { q: "Hvad passerer gennem stomata?", options: ["CO₂ og O₂", "Jern", "Salt", "Sand"], correct: 0 },
+    { q: "Hvad er hovedrollen for rødderne?", options: ["Fotosyntese", "Optage vand og næring", "Lave lyd", "Lave lys"], correct: 1 },
+    { q: "Hvad er hovedrollen for bladene?", options: ["Lagre vand", "Fotosyntese", "Lave frø", "Lave rødder"], correct: 1 },
+    { q: "Hvad er hovedrollen for blomsten?", options: ["Fotosyntese", "Formering", "Optage vand", "Lave rødder"], correct: 1 },
+    { q: "Hvad er hovedrollen for frugten?", options: ["Beskytte frø", "Lave fotosyntese", "Optage CO₂", "Lave vand"], correct: 0 },
+    { q: "Hvad er en producent i et økosystem?", options: ["Et dyr", "En plante", "En sten", "En svamp"], correct: 1 },
+    { q: "Hvad er en forbruger i et økosystem?", options: ["En plante", "Et dyr", "En sten", "En sky"], correct: 1 },
+    { q: "Hvad er en fødekæde?", options: ["En række af hvem der spiser hvem", "En metal-kæde", "En vandkæde", "En luftkæde"], correct: 0 },
+    { q: "Hvad sker der hvis der ikke er lys?", options: ["Fotosyntese stopper", "Fotosyntese bliver hurtigere", "Fotosyntese bliver til lyd", "Fotosyntese bliver til vand"], correct: 0 },
+    { q: "Hvad sker der hvis planten ikke får vand?", options: ["Den vokser hurtigere", "Den visner", "Den bliver til sten", "Den bliver til luft"], correct: 1 },
+    { q: "Hvad sker der hvis planten ikke får CO₂?", options: ["Fotosyntese stopper", "Fotosyntese bliver hurtigere", "Den laver mere O₂", "Den bliver blå"], correct: 0 },
+    { q: "Hvad sker der hvis planten ikke får lys?", options: ["Den laver mere glukose", "Den laver ingen fotosyntese", "Den bliver gennemsigtig", "Den bliver til metal"], correct: 1 },
+    { q: "Hvad er en grøn plante afhængig af for at leve?", options: ["Lys, vand, CO₂", "Guld, sølv, olie", "Plastik, glas, sten", "Lyd, varme, kulde"], correct: 0 },
+    { q: "Hvad er ilt vigtig for?", options: ["Forbrænding i dyr og mennesker", "At lave sten", "At lave metal", "At lave glas"], correct: 0 },
+    { q: "Hvad er kuldioxid vigtig for i planter?", options: ["Fotosyntese", "Respiration", "Fordampning", "Smeltning"], correct: 0 },
+    { q: "Hvad er den vigtigste energikilde for Jorden?", options: ["Månen", "Solen", "Mars", "Saturn"], correct: 1 },
+    { q: "Hvad er en celle?", options: ["En lille byggesten i levende ting", "En sten", "En sky", "En lyd"], correct: 0 },
+    { q: "Hvor i plantecellen foregår fotosyntese?", options: ["Mitokondrier", "Kloroplaster", "Kernen", "Vakuolen"], correct: 1 }
 ];
 
 function show(id) {
@@ -222,20 +376,28 @@ function backToStart() { show("startScreen"); }
 
 function startTraining(sec) {
     timeLeft = sec;
-    document.getElementById("timeLeft").textContent = sec;
-
+    updateTime();
     show("questionScreen");
     nextQuestion();
 
+    if (timer) clearInterval(timer);
     timer = setInterval(() => {
         timeLeft--;
-        document.getElementById("timeLeft").textContent = timeLeft;
+        updateTime();
         if (timeLeft <= 0) stopTraining();
     }, 1000);
 }
 
+function updateTime() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById("timeLeft").textContent =
+        minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+}
+
 function stopTraining() {
-    clearInterval(timer);
+    if (timer) clearInterval(timer);
+    timer = null;
     show("startScreen");
 }
 
@@ -252,15 +414,19 @@ function nextQuestion() {
         btn.textContent = opt;
 
         btn.onclick = () => {
+            const all = answersDiv.querySelectorAll("button");
+            all.forEach(b => b.disabled = true);
+
             if (i === q.correct) {
                 btn.classList.add("correct");
                 sunPower++;
                 document.getElementById("sunPower").textContent = sunPower;
             } else {
                 btn.classList.add("wrong");
+                all[q.correct].classList.add("correct");
             }
 
-            setTimeout(nextQuestion, 700);
+            setTimeout(nextQuestion, 900);
         };
 
         answersDiv.appendChild(btn);
@@ -274,13 +440,26 @@ function feedPlant() {
     document.getElementById("sunPower").textContent = sunPower;
 
     plantLevel++;
-    plantImg.style.transform = `scale(${1 + plantLevel * 0.1})`;
+    plant.style.transform = `scale(${1 + plantLevel * 0.08})`;
+
+    // Vis flere blade og til sidst blomst
+    if (plantLevel >= 2) leaves[2].classList.remove("hidden");
+    if (plantLevel >= 3) leaves[3].classList.remove("hidden");
+    if (plantLevel >= 4) leaves[4].classList.remove("hidden");
+    if (plantLevel >= 5) leaves[5].classList.remove("hidden");
+    if (plantLevel >= 6) leaves[6].classList.remove("hidden");
+    if (plantLevel >= 7) leaves[7].classList.remove("hidden");
+    if (plantLevel >= 8) flower.style.opacity = 1;
 
     if (plantLevel >= 10) {
+        // Planten “spytter” CO₂ til spilleren
         oxygen += 5;
         document.getElementById("oxygen").textContent = oxygen;
+
         plantLevel = 1;
-        plantImg.style.transform = "scale(1)";
+        plant.style.transform = "scale(1)";
+        leaves.forEach((l, idx) => { if (idx > 1) l.classList.add("hidden"); });
+        flower.style.opacity = 0;
     }
 }
 </script>
