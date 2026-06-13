@@ -248,7 +248,6 @@ let plantLevel = 1;
 let timer = null;
 let timeLeft = 0;
 
-/* Screens */
 function showScreen(id) {
     document.getElementById("startScreen").classList.add("hidden");
     document.getElementById("trainingMenu").classList.add("hidden");
@@ -259,54 +258,53 @@ function showScreen(id) {
 function openTraining() { showScreen("trainingMenu"); }
 function backToStart() { showScreen("startScreen"); }
 
-/* Questions */
 const questions = [
     { q: "Hvad bruger planten som energi?", options: ["CO₂", "Sollys", "Vand", "Ilt"], correct: 1 },
     { q: "Hvad optager planten fra luften?", options: ["O₂", "CO₂", "Nitrogen", "Ozon"], correct: 1 },
     { q: "Hvad udskiller planten?", options: ["CO₂", "O₂", "Metan", "Nitrogen"], correct: 1 },
     { q: "Hvad optager planten fra jorden?", options: ["Vand", "Ilt", "CO₂", "Salt"], correct: 0 },
-    { q: "Hvad danner planten?", options: ["Glukose", "Protein", "Fedt", "Jern"], correct: 0 }
-    { q: "Hvor i planten findes kloroplaster?", options: ["I bladene", "I rødderne", "I frugterne", "I blomsterne"], correct: 0 },
-{ q: "Hvad er formålet med klorofyl?", options: ["At optage lys", "At lave rødder", "At lave frø", "At lave vand"], correct: 0 },
-{ q: "Hvilken farve absorberer klorofyl dårligst?", options: ["Grøn", "Blå", "Rød", "Gul"], correct: 0 },
-{ q: "Hvad er et biprodukt af fotosyntese?", options: ["O₂", "CO₂", "Salt", "Nitrogen"], correct: 0 },
-{ q: "Hvad er hovedformålet med fotosyntese?", options: ["At lave glukose", "At lave varme", "At lave lyd", "At lave olie"], correct: 0 },
-{ q: "Hvad er nødvendigt for at lave glukose?", options: ["CO₂ og vand", "Salt og vand", "Ilt og vand", "Jern og vand"], correct: 0 },
-{ q: "Hvad sker der hvis planten får for lidt lys?", options: ["Fotosyntesen stopper", "Den bliver blå", "Den vokser hurtigere", "Den laver mere glukose"], correct: 0 },
-{ q: "Hvad sker der hvis planten får for meget vand?", options: ["Den drukner", "Den vokser hurtigere", "Den bliver rød", "Den laver mere O₂"], correct: 0 },
-{ q: "Hvad er stomata?", options: ["Små åbninger i bladet", "Rødder", "Frø", "Stængler"], correct: 0 },
-{ q: "Hvad kommer ind gennem stomata?", options: ["CO₂", "Salt", "Jern", "Protein"], correct: 0 },
-{ q: "Hvad kommer ud gennem stomata?", options: ["O₂", "Guld", "Nitrogen", "Vanddamp"], correct: 0 },
-{ q: "Hvad er glukose for planten?", options: ["Energi", "Gift", "Vand", "Luft"], correct: 0 },
-{ q: "Hvorfor er fotosyntese vigtig for mennesker?", options: ["Den laver O₂", "Den laver sten", "Den laver olie", "Den laver varme"], correct: 0 },
-{ q: "Hvad er den vigtigste energikilde for fotosyntese?", options: ["Solen", "Månen", "Stjernerne", "Jorden"], correct: 0 },
-{ q: "Hvad sker der om natten i planten?", options: ["Respiration", "Fotosyntese", "Fordampning", "Smeltning"], correct: 0 },
-{ q: "Hvad bruger planten rødderne til?", options: ["At optage vand", "At lave lys", "At lave O₂", "At lave frø"], correct: 0 },
-{ q: "Hvad er en producent i naturen?", options: ["En plante", "Et dyr", "En sten", "En sky"], correct: 0 },
-{ q: "Hvad er en forbruger i naturen?", options: ["Et dyr", "En plante", "En bakterie", "En sten"], correct: 0 },
-{ q: "Hvad er en fødekæde?", options: ["Hvem der spiser hvem", "En metal-kæde", "En vandkæde", "En luftkæde"], correct: 0 },
-{ q: "Hvad sker der hvis planten ikke får CO₂?", options: ["Fotosyntesen stopper", "Den bliver blå", "Den vokser hurtigere", "Den laver mere O₂"], correct: 0 },
-{ q: "Hvad sker der hvis planten ikke får vand?", options: ["Den visner", "Den bliver gennemsigtig", "Den bliver til sten", "Den vokser hurtigere"], correct: 0 },
-{ q: "Hvad sker der hvis planten ikke får næring?", options: ["Den vokser langsomt", "Den eksploderer", "Den bliver blå", "Den laver mere glukose"], correct: 0 },
-{ q: "Hvad er den kemiske formel for ilt?", options: ["O₂", "CO₂", "H₂O", "C₆H₁₂O₆"], correct: 0 },
-{ q: "Hvad er den kemiske formel for sukker?", options: ["C₆H₁₂O₆", "CO₂", "H₂O", "O₂"], correct: 0 },
-{ q: "Hvad er den kemiske formel for vand?", options: ["H₂O", "CO₂", "O₂", "NaCl"], correct: 0 },
-{ q: "Hvad er den vigtigste del af bladet for fotosyntese?", options: ["Kloroplasterne", "Rødderne", "Frøene", "Stænglen"], correct: 0 },
-{ q: "Hvad er en plantecelle fyldt med?", options: ["Vand", "Luft", "Olie", "Salt"], correct: 0 },
-{ q: "Hvad er vakuolen i en plantecelle?", options: ["Et vandlager", "En motor", "En lunge", "En hjerne"], correct: 0 },
-{ q: "Hvad er cellevæggen lavet af?", options: ["Cellulose", "Metal", "Protein", "Salt"], correct: 0 },
-{ q: "Hvad er mitokondrier?", options: ["Cellens kraftværk", "Cellens vægge", "Cellens farve", "Cellens frø"], correct: 0 },
-{ q: "Hvad laver mitokondrier?", options: ["Energi", "Lys", "Vand", "Salt"], correct: 0 },
-{ q: "Hvad er respiration?", options: ["Forbrænding af glukose", "Fotosyntese", "Fordampning", "Smeltning"], correct: 0 },
-{ q: "Hvornår laver planten respiration?", options: ["Hele tiden", "Kun om dagen", "Kun om natten", "Kun om vinteren"], correct: 0 },
-{ q: "Hvad er en plante afhængig af?", options: ["Lys, vand, CO₂", "Guld, sølv, olie", "Plastik, glas, sten", "Lyd, varme, kulde"], correct: 0 },
-{ q: "Hvad er en frugt?", options: ["En beskytter af frø", "En rod", "En stængel", "En blomst"], correct: 0 },
-{ q: "Hvad er en frøplante?", options: ["En ung plante", "En gammel plante", "En død plante", "En sten"], correct: 0 },
-{ q: "Hvad er pollen?", options: ["Plante-støv", "Salt", "Vand", "Jern"], correct: 0 },
-{ q: "Hvad er nektar?", options: ["Sød væske i blomster", "Salt", "Vand", "Gift"], correct: 0 },
-{ q: "Hvad tiltrækker bier?", options: ["Nektar", "Salt", "Jern", "CO₂"], correct: 0 },
-{ q: "Hvad hjælper bier med?", options: ["Bestøvning", "Fotosyntese", "Respiration", "Fordampning"], correct: 0 }
+    { q: "Hvad danner planten?", options: ["Glukose", "Protein", "Fedt", "Jern"], correct: 0 },
 
+    { q: "Hvor i planten findes kloroplaster?", options: ["I bladene", "I rødderne", "I frugterne", "I blomsterne"], correct: 0 },
+    { q: "Hvad er formålet med klorofyl?", options: ["At optage lys", "At lave rødder", "At lave frø", "At lave vand"], correct: 0 },
+    { q: "Hvilken farve absorberer klorofyl dårligst?", options: ["Grøn", "Blå", "Rød", "Gul"], correct: 0 },
+    { q: "Hvad er et biprodukt af fotosyntese?", options: ["O₂", "CO₂", "Salt", "Nitrogen"], correct: 0 },
+    { q: "Hvad er hovedformålet med fotosyntese?", options: ["At lave glukose", "At lave varme", "At lave lyd", "At lave olie"], correct: 0 },
+    { q: "Hvad er nødvendigt for at lave glukose?", options: ["CO₂ og vand", "Salt og vand", "Ilt og vand", "Jern og vand"], correct: 0 },
+    { q: "Hvad sker der hvis planten får for lidt lys?", options: ["Fotosyntesen stopper", "Den bliver blå", "Den vokser hurtigere", "Den laver mere glukose"], correct: 0 },
+    { q: "Hvad sker der hvis planten får for meget vand?", options: ["Den drukner", "Den vokser hurtigere", "Den bliver rød", "Den laver mere O₂"], correct: 0 },
+    { q: "Hvad er stomata?", options: ["Små åbninger i bladet", "Rødder", "Frø", "Stængler"], correct: 0 },
+    { q: "Hvad kommer ind gennem stomata?", options: ["CO₂", "Salt", "Jern", "Protein"], correct: 0 },
+    { q: "Hvad kommer ud gennem stomata?", options: ["O₂", "Guld", "Nitrogen", "Vanddamp"], correct: 0 },
+    { q: "Hvad er glukose for planten?", options: ["Energi", "Gift", "Vand", "Luft"], correct: 0 },
+    { q: "Hvorfor er fotosyntese vigtig for mennesker?", options: ["Den laver O₂", "Den laver sten", "Den laver olie", "Den laver varme"], correct: 0 },
+    { q: "Hvad er den vigtigste energikilde for fotosyntese?", options: ["Solen", "Månen", "Stjernerne", "Jorden"], correct: 0 },
+    { q: "Hvad sker der om natten i planten?", options: ["Respiration", "Fotosyntese", "Fordampning", "Smeltning"], correct: 0 },
+    { q: "Hvad bruger planten rødderne til?", options: ["At optage vand", "At lave lys", "At lave O₂", "At lave frø"], correct: 0 },
+    { q: "Hvad er en producent i naturen?", options: ["En plante", "Et dyr", "En sten", "En sky"], correct: 0 },
+    { q: "Hvad er en forbruger i naturen?", options: ["Et dyr", "En plante", "En bakterie", "En sten"], correct: 0 },
+    { q: "Hvad er en fødekæde?", options: ["Hvem der spiser hvem", "En metal-kæde", "En vandkæde", "En luftkæde"], correct: 0 },
+    { q: "Hvad sker der hvis planten ikke får CO₂?", options: ["Fotosyntesen stopper", "Den bliver blå", "Den vokser hurtigere", "Den laver mere O₂"], correct: 0 },
+    { q: "Hvad sker der hvis planten ikke får vand?", options: ["Den visner", "Den bliver gennemsigtig", "Den bliver til sten", "Den vokser hurtigere"], correct: 0 },
+    { q: "Hvad sker der hvis planten ikke får næring?", options: ["Den vokser langsomt", "Den eksploderer", "Den bliver blå", "Den laver mere glukose"], correct: 0 },
+    { q: "Hvad er den kemiske formel for ilt?", options: ["O₂", "CO₂", "H₂O", "C₆H₁₂O₆"], correct: 0 },
+    { q: "Hvad er den kemiske formel for sukker?", options: ["C₆H₁₂O₆", "CO₂", "H₂O", "O₂"], correct: 0 },
+    { q: "Hvad er den kemiske formel for vand?", options: ["H₂O", "CO₂", "O₂", "NaCl"], correct: 0 },
+    { q: "Hvad er den vigtigste del af bladet for fotosyntese?", options: ["Kloroplasterne", "Rødderne", "Frøene", "Stænglen"], correct: 0 },
+    { q: "Hvad er en plantecelle fyldt med?", options: ["Vand", "Luft", "Olie", "Salt"], correct: 0 },
+    { q: "Hvad er vakuolen i en plantecelle?", options: ["Et vandlager", "En motor", "En lunge", "En hjerne"], correct: 0 },
+    { q: "Hvad er cellevæggen lavet af?", options: ["Cellulose", "Metal", "Protein", "Salt"], correct: 0 },
+    { q: "Hvad er mitokondrier?", options: ["Cellens kraftværk", "Cellens vægge", "Cellens farve", "Cellens frø"], correct: 0 },
+    { q: "Hvad laver mitokondrier?", options: ["Energi", "Lys", "Vand", "Salt"], correct: 0 },
+    { q: "Hvad er respiration?", options: ["Forbrænding af glukose", "Fotosyntese", "Fordampning", "Smeltning"], correct: 0 },
+    { q: "Hvornår laver planten respiration?", options: ["Hele tiden", "Kun om dagen", "Kun om natten", "Kun om vinteren"], correct: 0 },
+    { q: "Hvad er en plante afhængig af?", options: ["Lys, vand, CO₂", "Guld, sølv, olie", "Plastik, glas, sten", "Lyd, varme, kulde"], correct: 0 },
+    { q: "Hvad er en frugt?", options: ["En beskytter af frø", "En rod", "En stængel", "En blomst"], correct: 0 },
+    { q: "Hvad er en frøplante?", options: ["En ung plante", "En gammel plante", "En død plante", "En sten"], correct: 0 },
+    { q: "Hvad er pollen?", options: ["Plante-støv", "Salt", "Vand", "Jern"], correct: 0 },
+    { q: "Hvad er nektar?", options: ["Sød væske i blomster", "Salt", "Vand", "Gift"], correct: 0 },
+    { q: "Hvad tiltrækker bier?", options: ["Nektar", "Salt", "Jern", "CO₂"], correct: 0 },
+    { q: "Hvad hjælper bier med?", options: ["Bestøvning", "Fotosyntese", "Respiration", "Fordampning"], correct: 0 }
 ];
 
 function startTraining(sec) {
@@ -366,7 +364,6 @@ function nextQuestion() {
     });
 }
 
-/* PLANT + CO2 ANIMATION */
 function feedPlant() {
     if (sunPower <= 0) return;
 
@@ -401,7 +398,6 @@ function feedPlant() {
     }
 }
 
-/* EXPLOSION */
 function makeExplosion() {
     for (let i = 0; i < 20; i++) {
         const p = document.createElement("div");
@@ -422,7 +418,6 @@ function makeExplosion() {
     }
 }
 
-/* FALLING CO2 */
 function makeFallingCO2() {
     for (let i = 0; i < 15; i++) {
         const f = document.createElement("div");
